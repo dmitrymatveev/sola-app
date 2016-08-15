@@ -1,0 +1,2 @@
+
+$.SolaApp.Route('project');

@@ -1,0 +1,1 @@
+new $.SolaApp.Route('user');

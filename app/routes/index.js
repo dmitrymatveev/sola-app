@@ -1,0 +1,2 @@
+
+new $.SolaApp.Route('index');
