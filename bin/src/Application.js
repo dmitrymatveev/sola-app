@@ -1,22 +1,24 @@
 var Router = require('./Router');
 var loader = require('../util/loader');
+var singleton = require('../util/singleton');
+const runtime = require('./runtime');
 
 class Application {
   constructor() {
+    singleton.ensureSingletonConstructor(Application);
     console.log('SolaApp: v0.0.1-dev');
-    this.onReady = () => {};
     this.router = new Router();
+  }
+
+  /** @returns {Application} */
+  static instance() {
+    return singleton.lookupInstance(Application);
+  }
+
+  start() {
+    this.router.transition('index');
   }
 }
 
-let instance;
-Application.instance = function () {
-  return instance ? instance : instance = new Application();
-};
-
-Application.start = function () {
-  let app = Application.instance();
-  window.onload = app.onReady;
-};
-
+singleton.setClassSingleton(Application);
 module.exports = Application;

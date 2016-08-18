@@ -1,20 +1,27 @@
-let Application = require('./src/Application');
-let Route = require('./src/Route');
-let loader = require('./util/loader');
 
-Application.instance().onReady = function () {
-  loader.loadScript('index.js')
-    .then(function () {
-      Application.instance().router.transition('index');
-    });
-};
-
-var $ = require('jquery');
+const $ = window.$ = require('jquery');
 $.Handlebars = require('handlebars');
+require('./util/promise');
+
+const Application = require('./src/Application');
+const Route = require('./src/Route');
+
+const app = Application.instance();
+
 $.SolaApp = {
   Route
 };
 
-window.$ = $;
+$.Handlebars.registerPartial(
+  'outlet',
+  "<div>outlet</div>"
+);
 
-Application.start();
+window.onload = function () {
+  app.start();
+};
+
+window.addEventListener("unhandledrejection", function(err, promise) {
+  // Handle any uncaught errors here
+  // console.error(err);
+});
