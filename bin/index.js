@@ -1,7 +1,9 @@
 
 const $ = window.$ = require('jquery');
 $.Handlebars = require('handlebars');
-require('./util/promise');
+
+require('./util/promise.auto');
+require('./util/promise.hash');
 
 const Application = require('./src/Application');
 const Route = require('./src/Route');
@@ -12,16 +14,16 @@ $.SolaApp = {
   Route
 };
 
-$.Handlebars.registerPartial(
-  'outlet',
-  "<div>outlet</div>"
-);
+// $.Handlebars.registerPartial(
+//   'outlet',
+//   "<div></div>"
+// );
+
+$.Handlebars.registerHelper('outlet', function () {
+  console.log(this);
+  return 'here';
+});
 
 window.onload = function () {
   app.start();
 };
-
-window.addEventListener("unhandledrejection", function(err, promise) {
-  // Handle any uncaught errors here
-  // console.error(err);
-});

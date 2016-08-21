@@ -81,8 +81,12 @@ class Route {
       controller: this.getController(),
       template: this.getTemplate()
     }).then(res => {
-      return res.template.hbs(res.controller.ctx);
+      return res.template.hbs(res.controller);
     });
+  }
+
+  tearDown() {
+    return Promise.resolve();
   }
 }
 

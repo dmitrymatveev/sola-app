@@ -8,7 +8,7 @@ class Controller {
   constructor(url, delegate) {
     PRIVATE.set(this, {
       url,
-      context: {}
+      context: {foo:'boo'}
     });
 
     if (delegate) {

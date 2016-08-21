@@ -16,7 +16,20 @@ class Application {
   }
 
   start() {
+    this._attachEvents();
     this.router.transition('index');
+  }
+
+  _attachEvents() {
+
+    window.addEventListener("unhandledrejection", (err, promise) => {
+      // Handle any uncaught errors here
+      // console.error(err);
+    });
+
+    window.addEventListener('hashchange', () => {
+      this.router.transition(location.hash);
+    });
   }
 }
 
