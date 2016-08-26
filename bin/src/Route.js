@@ -1,5 +1,6 @@
 const store = require('./InternalModulesCache');
-const loader = require('../util/loader');
+const hashCode = require('../util/string').hashCode;
+const hashbang = require('../util/hashbang');
 
 const Controller = require('./Controller');
 const Template = require('./Template');
@@ -11,7 +12,9 @@ class Route {
     console.log('Route: ' + url);
 
     PRIVATE.set(this, {
+      id: Route.getTemplateId(url),
       url,
+      path: new hashbang.arrayPath(url),
       controller: null,
       template: null
     });
@@ -23,13 +26,32 @@ class Route {
     store.instance().routes.set(url, this);
   }
 
-  get url() {
-    return PRIVATE.get(this).url;
+  get url() { return PRIVATE.get(this).url }
+  get path() { return PRIVATE.get(this).path }
+  get id() { return PRIVATE.get(this).id }
+
+  static lookupRouteByUrl(url) {
+    let id = hashbang.toRemotePath(url);
+    return store.instance().lookup(store.MODULE_TYPE.route, id, `routes/${id}`);
   }
 
-  static lookupRouteInstance(url) {
-    let path = `routes/${url}`;
-    return store.instance().lookup(store.MODULE_TYPE.route, url, path);
+  static getTemplateId(url) {
+    return '#sla_' + hashCode(url);
+  }
+
+  getParentRenderDestination() {
+    let path = this.path;
+
+    if (path.length === 0) {
+      return Promise.resolve('body');
+    }
+    else if (path.length > 1) {
+      let parentUrl = path[path.length - 1];
+      return Route.lookupRouteByUrl(parentUrl).then(route => route.id);
+    }
+    else {
+      return Promise.resolve(Route.getTemplateId('index'));
+    }
   }
 
   getController() {
@@ -83,10 +105,6 @@ class Route {
     }).then(res => {
       return res.template.hbs(res.controller);
     });
-  }
-
-  tearDown() {
-    return Promise.resolve();
   }
 }
 

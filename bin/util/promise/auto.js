@@ -1,15 +1,19 @@
-const iterator = require('./object').Iterator;
+"use strict";
+
+require('./index');
+const iterator = require('../object').Iterator;
 
 // https://en.wikipedia.org/wiki/Topological_sorting#Depth-first_search
 Promise.auto = function (tasks) {
 
   var sortedList = [];
   var cache = {};
+  var results = {};
 
   var task = function (key, value) {
     return cache[key] !== undefined ?
       cache[key] :
-      cache[key] = {key, value, lock: false, done: false, dependencies: [], result: null};
+      cache[key] = {key, value, lock: false, done: false, dependencies: []};
   };
 
   var visit = function (n) {
@@ -43,24 +47,15 @@ Promise.auto = function (tasks) {
     visit(n);
   }
 
-  return function () {
-    var promise = Promise.resolve();
-    for(let next of iterator(sortedList)) {
-      promise = promise
-        .then(function () {
-          return next.dependencies.map(function (key) {
-            return cache[key].result;
-          });
-        })
-        .then(function () {
-          return next.value.apply(this, arguments);
-        })
-        .then(function (res) {
-          return next.result = res;
-        });
-    }
-    return promise.then(function () {
-      return sortedList.map(task => task.result);
-    });
+  var promise = Promise.resolve();
+  for(let next of iterator(sortedList)) {
+    promise = promise
+      .then(() => next.dependencies.reduce(function (ret, key) {
+        ret[key] = results[key];
+        return ret;
+      }, {}))
+      .then(dependencies => Promise.isPromise(next.value) ? next.value : next.value(dependencies))
+      .then(res => results[next.key] = res);
   }
+  return promise.then(() => results);
 };

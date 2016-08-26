@@ -1,3 +1,6 @@
+"use strict";
+require('./index');
+
 Promise.hash = function (hash) {
   let keys = Object.keys(hash);
 

@@ -18,6 +18,7 @@ class Controller {
     store.instance().controllers.set(url, this);
   }
 
+  get url() {return PRIVATE.get(this).url}
   get ctx() {return PRIVATE.get(this).context}
 
   static lookupControllerInstance(url) {

@@ -22,12 +22,13 @@ gulp.task('build-sources', function () {
     .pipe(gulp.dest('./app/'));
 });
 
-gulp.task('web', ['default'], function() {
+gulp.task('serve', ['default'], function() {
 
   gulp.watch('./bin/**/*.*', ['build-sources']);
 
   return gulp.src('app')
     .pipe(webserver({
+      port: 80,
       livereload: true,
       directoryListing: false,
       open: true

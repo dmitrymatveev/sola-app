@@ -2,8 +2,9 @@
 const $ = window.$ = require('jquery');
 $.Handlebars = require('handlebars');
 
-require('./util/promise.auto');
-require('./util/promise.hash');
+require('./util/promise/all');
+
+const string = require('./util/string');
 
 const Application = require('./src/Application');
 const Route = require('./src/Route');
@@ -21,7 +22,8 @@ $.SolaApp = {
 
 $.Handlebars.registerHelper('outlet', function () {
   console.log(this);
-  return 'here';
+  var tpl = `<div id="sla_${string.hashCode(this.url)}"></div>`;
+  return new $.Handlebars.SafeString(tpl);
 });
 
 window.onload = function () {

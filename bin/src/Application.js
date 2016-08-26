@@ -1,6 +1,7 @@
-var Router = require('./Router');
-var loader = require('../util/loader');
-var singleton = require('../util/singleton');
+const Router = require('./Router');
+const loader = require('../util/loader');
+const singleton = require('../util/singleton');
+
 const runtime = require('./runtime');
 
 class Application {
@@ -16,11 +17,14 @@ class Application {
   }
 
   start() {
-    this._attachEvents();
-    this.router.transition('index');
+    this.configureWindow();
+    this.router.transition(location.hash.replace('#', ''));
   }
 
-  _attachEvents() {
+  configureWindow() {
+
+    var div = $('<div></div>').attr('id', 'sla_0');
+    $('body').append(div);
 
     window.addEventListener("unhandledrejection", (err, promise) => {
       // Handle any uncaught errors here
@@ -28,7 +32,7 @@ class Application {
     });
 
     window.addEventListener('hashchange', () => {
-      this.router.transition(location.hash);
+      this.router.transition(location.hash.replace('#', ''));
     });
   }
 }
